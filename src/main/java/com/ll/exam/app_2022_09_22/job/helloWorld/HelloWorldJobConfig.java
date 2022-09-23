@@ -8,6 +8,7 @@ import org.springframework.batch.core.configuration.annotation.JobBuilderFactory
 import org.springframework.batch.core.configuration.annotation.JobScope;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepScope;
+import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.repeat.RepeatStatus;
@@ -25,6 +26,7 @@ public class HelloWorldJobConfig {
     @Bean
     public Job helloWorldJob() { // 잡 생성 메서드
         return jobBuilderFactory.get("helloWorldJob") // "helloWorldJob" 을 이름을 가지는 Job 빌더를 가져오게 해준다. DB에도 helloWorldJob이라고 저장된다.
+                .incrementer(new RunIdIncrementer()) // 강제로 매번 다른 ID를 실행시에 파라미터로 부여
                 .start(helloWorldStep1()) // step 을 넣어주는 것이다.
                 .build();
     }
@@ -33,19 +35,16 @@ public class HelloWorldJobConfig {
     @Bean
     public Step helloWorldStep1() { // 스탭 생성 메서드
         return stepBuilderFactory.get("helloWorldStep1")
-                .tasklet(helloWorldTasklet())// 간단한 것은 tasklet(테스클릿)으로 가능하다.
+                .tasklet(helloWorldTasklet())// 간단한 것은 tasklet(테스클릿)으로 가능하다. 복잡한것은 item으로 해야한다.
                 .build();
     }
 
     @StepScope
     @Bean
     public Tasklet helloWorldTasklet() {
-        return new Tasklet() {
-            @Override
-            public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
-                System.out.println("스프링 배치");
-                return RepeatStatus.FINISHED; // 일이 잘 맞춰줬다는 상태를 알려주는 것이다.
-            }
+        return (contribution, chunkContext) -> {
+            System.out.println("헬로 월드!");
+            return RepeatStatus.FINISHED; // 일이 잘 맞춰줬다는 상태를 알려주는 것이다. ( 작업 상태를 성공, 실팽 등 알려주는 곳 )
         };
     }
 }
