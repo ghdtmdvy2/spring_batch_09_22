@@ -40,8 +40,9 @@ public class ProductOption extends BaseEntity {
     }
 
     public boolean isOrderable(int quantity) {
+        // 품절 되지 않았다면 주문 가능.
         if (isSoldOut() == false) return true;
-
+        // 품절이 되었으나 재고가 있는 경우 주문 가능.
         return getStockQuantity() >= quantity;
     }
 }

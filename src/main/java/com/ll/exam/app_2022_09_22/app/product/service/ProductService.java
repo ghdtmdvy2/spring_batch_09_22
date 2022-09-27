@@ -15,6 +15,7 @@ public class ProductService {
     private final ProductRepository productRepository;
 
     public Product create(String name, int salePrice, int wholesalePrice, String makerShopName, List<ProductOption> options) {
+        // 마진가를 계산해주는 부분. 대부분 도매가 * 1.6이 마진이 생김.
         int price = (int) Math.ceil(wholesalePrice * 1.6) / 100 * 100;
 
         Product product = Product.builder()

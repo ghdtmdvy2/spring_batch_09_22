@@ -15,8 +15,10 @@ public class CartService {
     private final CartItemRepository cartItemRepository;
 
     public CartItem addItem(Member member, ProductOption productOption, int quantity) {
+        // 카트에 중복된 상품이 들어가는 경우 수량이 증가하기 위해 카트에 들어가있는 상품을 가져오는 변수.
         CartItem oldCartItem = cartItemRepository.findByMemberIdAndProductOptionId(member.getId(), productOption.getId()).orElse(null);
 
+        // 카트에 있는 상품이 있다면 용량을 추가.
         if ( oldCartItem != null ) {
             oldCartItem.setQuantity(oldCartItem.getQuantity() + quantity);
             cartItemRepository.save(oldCartItem);
