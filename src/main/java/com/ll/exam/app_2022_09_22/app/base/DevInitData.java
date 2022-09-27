@@ -60,6 +60,27 @@ public class DevInitData {
             int order1PayPrice = order1.calculatePayPrice();
             // 주문 가격을 가져와 유저가 가지고 있는 예치금을 통해 빼줌.
             orderService.payByRestCashOnly(order1);
+
+            // 2번 주문 생성
+            // - 장바구니에 담기
+            // - 주문 생성
+
+            ProductOption product1Option__RED_44 = product1.getProductOptions().get(0);
+            ProductOption product1Option__BLUE_44 = product1.getProductOptions().get(2);
+
+            cartService.addItem(member1, product1Option__RED_44, 1); // productOption__RED_44 총 수량 1
+            cartService.addItem(member1, product1Option__RED_44, 2); // productOption__RED_44 총 수량 3
+            cartService.addItem(member1, product1Option__BLUE_44, 1); // productOption__BLUE_44 총 수량 1
+
+            Order order2 = orderService.createFromCart(member2);
+
+            log.debug("order2 payPrice : " + order2.calculatePayPrice());
+
+            memberService.addCash(member2, 370_000, "충전__무통장입금");
+
+            log.debug("member2 restCash : " + member2.getRestCash());
+
+            orderService.payByRestCashOnly(order2);
         };
     }
 }
