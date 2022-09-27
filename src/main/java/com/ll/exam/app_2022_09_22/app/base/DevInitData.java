@@ -21,10 +21,16 @@ import java.util.List;
 @Profile("dev")
 @Slf4j
 public class DevInitData {
+    // DevInitData 가 한번 실행이 되게 위한 변수. ( 스프링 배치 내에서 한번 실행 되고 다시 생성되지 않게 만들기 위해서이다. )
+    private boolean initDataDone = false;
     @Bean
     public CommandLineRunner initData(MemberService memberService, ProductService productService, CartService cartService, OrderService orderService) {
         return args ->
         {
+            // initDataDone 이 true 면 이미 한번 실행이 됐음을 알려준다.
+            if (initDataDone) return;
+            // initDataDone 을 true로 만들어준다.
+            initDataDone = true;
             class Helper {
                 public Order order(Member member, List<ProductOption> productOptions) {
                     for (int i = 0; i < productOptions.size(); i++) {
