@@ -35,4 +35,20 @@ public class Order extends BaseEntity {
 
         orderItems.add(orderItem);
     }
+    // 주문 가격 계산
+    public int calculatePayPrice() {
+        int payPrice = 0;
+
+        for ( OrderItem orderItem : orderItems ) {
+            payPrice += orderItem.calculatePayPrice();
+        }
+
+        return payPrice;
+    }
+
+    public void setPaymentDone() {
+        for ( OrderItem orderItem : orderItems ) {
+            orderItem.setPaymentDone();
+        }
+    }
 }

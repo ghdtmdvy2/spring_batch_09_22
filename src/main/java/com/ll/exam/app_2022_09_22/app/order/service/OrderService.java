@@ -3,6 +3,7 @@ package com.ll.exam.app_2022_09_22.app.order.service;
 import com.ll.exam.app_2022_09_22.app.cart.entity.CartItem;
 import com.ll.exam.app_2022_09_22.app.cart.service.CartService;
 import com.ll.exam.app_2022_09_22.app.member.entity.Member;
+import com.ll.exam.app_2022_09_22.app.member.service.MemberService;
 import com.ll.exam.app_2022_09_22.app.order.entity.Order;
 import com.ll.exam.app_2022_09_22.app.order.entity.OrderItem;
 import com.ll.exam.app_2022_09_22.app.order.repository.OrderRepository;
@@ -18,6 +19,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class OrderService {
+    private final MemberService memberService;
     private final CartService cartService;
     private final OrderRepository orderRepository;
 
@@ -66,5 +68,29 @@ public class OrderService {
         orderRepository.save(order);
 
         return order;
+    }
+
+    @Transactional
+    public void payByRestCashOnly(Order order) {
+        // 주문자의 가지고 있는 Cash를 통해 계산하기 때문에 주문자를 찾아온다.
+        Member orderer = order.getMember();
+
+        // 주문자의 Cash를 가져옴.
+        long restCash = orderer.getRestCash();
+
+        // 주문을 통한 가격 계산
+        int payPrice = order.calculatePayPrice();
+
+        // 만약 자기가 가지고 있는 캐시보다 결제 할 금액(주문 할 금액)보다 크다면 RuntimeException
+        if (payPrice > restCash) {
+            throw new RuntimeException("예치금이 부족합니다.");
+        }
+        // 정상적으로 주문이 진행이 되었다면 Cashlog를 찍어줌.
+        memberService.addCash(orderer, payPrice * -1, "주문결제__예치금결제");
+
+        // 주문자의 주문 리스트를 저장해줌.
+        order.setPaymentDone();
+        // 주문 저장. ( 주문이랑 주문리스트가 관계가 맺어져 있기 때문에 주문을 저장하면 알아서 주문 리스트도 저장이 된다. )
+        orderRepository.save(order);
     }
 }

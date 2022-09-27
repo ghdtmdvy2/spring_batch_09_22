@@ -3,6 +3,7 @@ package com.ll.exam.app_2022_09_22.app.base;
 import com.ll.exam.app_2022_09_22.app.cart.service.CartService;
 import com.ll.exam.app_2022_09_22.app.member.entity.Member;
 import com.ll.exam.app_2022_09_22.app.member.service.MemberService;
+import com.ll.exam.app_2022_09_22.app.order.entity.Order;
 import com.ll.exam.app_2022_09_22.app.order.service.OrderService;
 import com.ll.exam.app_2022_09_22.app.product.entity.Product;
 import com.ll.exam.app_2022_09_22.app.product.entity.ProductOption;
@@ -30,11 +31,13 @@ public class DevInitData {
             Member member4 = memberService.join("user4", password, "user4@test.com");
 
             // 만원 충전
-            memberService.addCash(member1, 10_000);
+            memberService.addCash(member1, 10_000, "충전__무통장입금");
             // 이만원 충전
-            memberService.addCash(member1, 20_000);
+            memberService.addCash(member1, 20_000, "충전__무통장입금");
             // 5천원 사용
-            memberService.addCash(member1, -5_000);
+            memberService.addCash(member1, -5_000, "출금__일반");
+            // 삼십만원 충전
+            memberService.addCash(member1, 300_000, "충전__무통장입금");
 
             // 현재 보유중인 캐시 금액
             long restCash = memberService.getRestCash(member1);
@@ -51,7 +54,12 @@ public class DevInitData {
             cartService.addItem(member1, productOption__RED_44, 2); // productOption__RED_44 총 수량 3
             cartService.addItem(member1, productOption__BLUE_44, 1); // productOption__BLUE_44 총 수량 1
 
-            orderService.createFromCart(member1);
+            // 주문을 만들기
+            Order order1 = orderService.createFromCart(member1);
+            // 주문을 통한 가격 계산
+            int order1PayPrice = order1.calculatePayPrice();
+            // 주문 가격을 가져와 유저가 가지고 있는 예치금을 통해 빼줌.
+            orderService.payByRestCashOnly(order1);
         };
     }
 }

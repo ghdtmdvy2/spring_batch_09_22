@@ -30,8 +30,8 @@ public class MemberService {
     }
 
     @Transactional
-    public long addCash(Member member, long price) {
-        CashLog cashLog = cashService.addCash(member, price);
+    public long addCash(Member member, long price, String eventType) {
+        CashLog cashLog = cashService.addCash(member, price, eventType);
 
         // 기존에 있던 충전한 금액 + 새로 충전한 금액
         long newRestCash = member.getRestCash() + cashLog.getPrice();
