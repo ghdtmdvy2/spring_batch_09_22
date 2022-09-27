@@ -30,6 +30,8 @@ public class Order extends BaseEntity {
     @OneToMany(mappedBy = "order", cascade = ALL, orphanRemoval = true)
     private List<OrderItem> orderItems = new ArrayList<>();
 
+
+
     public void addOrderItem(OrderItem orderItem) {
         orderItem.setOrder(this);
 
@@ -49,6 +51,13 @@ public class Order extends BaseEntity {
     public void setPaymentDone() {
         for ( OrderItem orderItem : orderItems ) {
             orderItem.setPaymentDone();
+        }
+    }
+
+
+    public void setRefundDone() {
+        for ( OrderItem orderItem : orderItems ) {
+            orderItem.setRefundDone();
         }
     }
 }

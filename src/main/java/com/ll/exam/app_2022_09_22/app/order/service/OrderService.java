@@ -93,4 +93,9 @@ public class OrderService {
         // 주문 저장. ( 주문이랑 주문리스트가 관계가 맺어져 있기 때문에 주문을 저장하면 알아서 주문 리스트도 저장이 된다. )
         orderRepository.save(order);
     }
+    @Transactional
+    public void refund(Order order) {
+        order.setRefundDone();
+        orderRepository.save(order);
+    }
 }

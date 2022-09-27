@@ -81,6 +81,8 @@ public class DevInitData {
             log.debug("member2 restCash : " + member2.getRestCash());
 
             orderService.payByRestCashOnly(order2);
+
+            orderService.refund(order2);
         };
     }
 }
