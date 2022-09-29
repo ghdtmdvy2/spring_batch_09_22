@@ -50,11 +50,17 @@ public class RebateOrderItem extends BaseEntity {
     // 상품
     private String productName;
 
+    private LocalDateTime payDate; // 결제날짜
+
     // 상품옵션
-    private String productOptionColor;
-    private String productOptionSize;
-    private String productOptionDisplayColor;
-    private String productOptionDisplaySize;
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "color", column = @Column(name = "product_option_color")),
+            @AttributeOverride(name = "size", column = @Column(name = "product_option_size")),
+            @AttributeOverride(name = "displayColor", column = @Column(name = "product_option_display_color")),
+            @AttributeOverride(name = "displaySize", column = @Column(name = "product_option_display_size"))
+    })
+    private RebateOrderItem.EmbProductOption embProductOption;
 
     // 주문 했을 때의 생성 날짜
     private LocalDateTime orderItem_create_date;
@@ -77,13 +83,26 @@ public class RebateOrderItem extends BaseEntity {
         productName = orderItem.getProductOption().getProduct().getName();
 
         // 상품 옵션 추가 데이터
-        productOptionColor = orderItem.getProductOption().getColor();
-        productOptionSize = orderItem.getProductOption().getSize();
-        productOptionDisplayColor = orderItem.getProductOption().getDisplayColor();
-        productOptionDisplaySize = orderItem.getProductOption().getDisplaySize();
+        embProductOption = new EmbProductOption(orderItem.getProductOption());
 
         // 주문 아이템 추가 데이터
         orderItem_create_date = orderItem.getCreateDate();
-    }
 
+        payDate = orderItem.getPayDate();// 결제 날짜
+    }
+    @Embeddable
+    @NoArgsConstructor
+    public static class EmbProductOption {
+        private String color;
+        private String size;
+        private String displayColor;
+        private String displaySize;
+
+        public EmbProductOption(ProductOption productOption) {
+            color = productOption.getColor();
+            size = productOption.getSize();
+            displayColor = productOption.getDisplayColor();
+            displaySize = productOption.getDisplaySize();
+        }
+    }
 }
