@@ -11,4 +11,9 @@ import java.util.List;
 
 public interface OrderItemRepository extends JpaRepository<OrderItem, Long> {
     Page<OrderItem> findAllByIdBetween(long startId,long endId, Pageable pageable);
+
+    Page<OrderItem> findAllByIdBetweenAndIsPaid(long startId,long endId, boolean isPaid,Pageable pageable);
+
+
+    Page<OrderItem> findAllByIsPaid(boolean isPaid,Pageable pageable);
 }
