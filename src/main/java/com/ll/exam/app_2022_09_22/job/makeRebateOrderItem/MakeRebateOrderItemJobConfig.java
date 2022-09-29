@@ -17,6 +17,7 @@ import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.batch.item.data.RepositoryItemReader;
 import org.springframework.batch.item.data.builder.RepositoryItemReaderBuilder;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -33,13 +34,13 @@ public class MakeRebateOrderItemJobConfig {
     private final StepBuilderFactory stepBuilderFactory;
 
     private final OrderItemRepository orderItemRepository;
+
     private final RebateOrderItemRepository rebateOrderItemRepository;
 
 
     @Bean
     public Job makeRebateOrderItemJob(Step makeRebateOrderItemStep1, CommandLineRunner initData) throws Exception {
         initData.run();
-
         return jobBuilderFactory.get("makeRebateOrderItemJob")
                 .start(makeRebateOrderItemStep1)
                 .build();
@@ -62,15 +63,19 @@ public class MakeRebateOrderItemJobConfig {
 
     @StepScope
     @Bean
-    public RepositoryItemReader<OrderItem> orderItemReader() {
+    public RepositoryItemReader<OrderItem> orderItemReader(
+            @Value("#{jobParameters['fromId']}") long fromId,
+            @Value("#{jobParameters['endId']}") long endId
+    ) {
         return new RepositoryItemReaderBuilder<OrderItem>()
                 .name("orderItemReader")
                 .repository(orderItemRepository)
-                .methodName("findAll")
+                .methodName("findAllByIdBetween")
                 .pageSize(100)
-                .arguments(Arrays.asList())
+                .arguments(Arrays.asList(fromId, endId))
                 .sorts(Collections.singletonMap("id", Sort.Direction.ASC))
                 .build();
+
     }
 
     @StepScope
