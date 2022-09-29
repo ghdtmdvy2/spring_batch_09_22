@@ -45,6 +45,15 @@ public class RebateOrderItem extends BaseEntity {
     private int refundQuantity; // 환불한 개수
     private boolean isPaid; // 결제여부
 
+    // 상품
+    private String productName;
+
+    // 상품옵션
+    private String productOptionColor;
+    private String productOptionSize;
+    private String productOptionDisplayColor;
+    private String productOptionDisplaySize;
+
     public RebateOrderItem(OrderItem orderItem) {
         this.orderItem = orderItem;
         order = orderItem.getOrder();
@@ -54,10 +63,19 @@ public class RebateOrderItem extends BaseEntity {
         salePrice = orderItem.getSalePrice();
         wholesalePrice = orderItem.getWholesalePrice();
         pgFee = orderItem.getPgFee();
-        payPrice = orderItem.getPrice();
+        payPrice = orderItem.getPayPrice();
         refundPrice = orderItem.getRefundPrice();
         refundQuantity = orderItem.getRefundQuantity();
         isPaid = orderItem.isPaid();
+
+        // 상품
+        productName = orderItem.getProductOption().getProduct().getName();
+
+        // 상품 옵션 추가 데이터
+        productOptionColor = orderItem.getProductOption().getColor();
+        productOptionSize = orderItem.getProductOption().getSize();
+        productOptionDisplayColor = orderItem.getProductOption().getDisplayColor();
+        productOptionDisplaySize = orderItem.getProductOption().getDisplaySize();
     }
 
 }
